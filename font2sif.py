@@ -282,3 +282,11 @@ for i in range(0, len(char_ranges)):
             binfile.write(data.tobytes())
 
 binfile.close()
+
+# compress to zlib
+fd = open(out_file_path + ".sif", "rb")
+bindata = fd.read()
+fd.close()
+fd = open(out_file_path + ".sifz", "wb")
+fd.write(zlib.compress(bindata, 9))
+fd.close()
