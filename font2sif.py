@@ -20,6 +20,7 @@ import sys
 import math
 from struct import *
 import argparse
+import zlib
 
 #######################################################################
 if sys.version_info < (3,0):
@@ -89,6 +90,7 @@ down_min = 9999
 total_width = 0
 lowercase_y = 0
 capital_y = 0
+max_width = 0
 
 if len(char_ranges) < 1:
     char_ranges = [(0x0000,0xFFFF)]
@@ -110,7 +112,9 @@ for r in char_ranges:
         top = face.glyph.bitmap_top
         advance = int(face.glyph.advance.x/64)
 
-        total_width += max(bitmap.width + left, advance)
+        w = max(bitmap.width + left, advance)
+        total_width += w
+        max_width = max(max_width, w)
 
         up_max = max(up_max, top)
         down_min = min(down_min, top - bitmap.rows)
@@ -236,7 +240,7 @@ if verbose:
     print("------ total font size {} bytes ------ ".format(total_binary_size + total_headers_size))
 
 #######################################################################
-out_file_path = font_path + "." + str(pix_size) + "p." + str(bit_per_pixel) + "bpp"
+out_file_path = font_path + "." + str(max_height) + "x" + str(max_width)+ "." + str(bit_per_pixel) + "bpp"
 if save_render:
     img = Image.fromarray(img)
     img.save(out_file_path + ".png")
